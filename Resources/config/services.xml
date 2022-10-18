@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="env(HEADLESS_VARNISH_ACTIVE)">false</parameter>
+        <parameter key="env(HEADLESS_VARNISH_HOSTS)"/>
+    </parameters>
+
+    <services>
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Event\ReverseProxyCache">
+            <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway"/>
+            <tag name="kernel.event_listener"/>
+        </service>
+
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway">
+            <argument>%headless_shopware_varnish_cache.enabled%</argument>
+            <argument>%headless_shopware_varnish_cache.reverse_proxy.hosts%</argument>
+            <argument>%headless_shopware_varnish_cache.reverse_proxy.max_parallel_invalidations%</argument>
+            <argument>%headless_shopware_varnish_cache.reverse_proxy.ban_method%</argument>
+            <argument>%headless_shopware_varnish_cache.reverse_proxy.tag_flush_threshold%</argument>
+        </service>
+
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Command\InvalidationCommand">
+            <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Event\RequestSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway"/>
+        </service>
+
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Adapter\Cache\CacheItemPool">
+            <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway" />
+        </service>
+
+        <service id="Shopware\Core\Framework\Adapter\Cache\CacheClearer" class="Mothership\HeadlessShopwareVarnishCacheBundle\Adapter\Cache\CacheClearer">
+            <argument type="collection">
+                <argument type="service" id="cache.object"/>
+                <argument type="service" id="cache.http"/>
+                <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Adapter\Cache\CacheItemPool"/>
+            </argument>
+            <argument type="service" id="cache_clearer"/>
+            <argument type="service" id="filesystem"/>
+            <argument>%kernel.cache_dir%</argument>
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="messenger.bus.shopware"/>
+
+            <tag name="messenger.message_handler"/>
+        </service>
+    </services>
+</container>
