@@ -3,6 +3,7 @@
     "description": "Shopware bundle that adds a cache adapter for a varnish for headless shopware",
     "type": "symfony-bundle",
     "license": "MIT",
+    "version": "1.1.0",
     "authors": [
         {
             "name": "Niklas Wolf",
