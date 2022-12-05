@@ -22,7 +22,8 @@ class Configuration implements ConfigurationInterface
                         ->variableNode('hosts')->defaultNull()->end()
                         ->scalarNode("max_parallel_invalidations")->end()
                         ->scalarNode("ban_method")->end()
-                        ->scalarNode("tag_flush_threshold")->end();
+                        ->scalarNode("tag_flush_threshold")->end()
+                        ->booleanNode("use_xkey")->defaultFalse()->end();
         return $treeBuilder;
     }
 }

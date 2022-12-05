@@ -62,6 +62,7 @@ headless_shopware_varnish_cache:
     max_parallel_invalidations: 3
     ban_method: "BAN"
     tag_flush_threshold: 100
+    use_xkey: true # requires Varnish module xkey
 ```
 
 As you can see, two environment variables are used:
@@ -72,7 +73,9 @@ As you can see, two environment variables are used:
 
 Example Varnish configuration
 -----
-See a stripped down example Varnish configuration [here](docs/example.vcl).  
+See a stripped down example Varnish configuration [here](docs/example.vcl).   
+There is also an example available which only uses xkeys [here](docs/example_xkeys.vcl).
+
 Disclaimer: this is not a production ready configuration file and stripped down to show the essential parts for the
 caching solution!
 
@@ -92,7 +95,14 @@ that contain this product get invalidated too and therefore are always up-to-dat
 - --regex : Regex to match URLs which should be flushed
 
 ## Flush manually via curl
+### Using the xkeys version
+| Usecase          | Command                                                     | Description                                                |
+|------------------|-------------------------------------------------------------|------------------------------------------------------------|
+| single URL       | `curl -X BAN https://www.domain.de/my/path`                 | Only the specified URL gets flushed                        |
+| single cache-tag | `curl -X BAN -H 'xkey: product-<ID>' https://www.domain.de` | Flush all sites with cache-tag "product-<ID>" on this host |
 
+
+### Using the custom-header version
 | Usecase          | Command                                                             | Description                                                |
 |------------------|---------------------------------------------------------------------|------------------------------------------------------------|
 | single URL       | `curl -X BAN https://www.domain.de/my/path`                         | Only the specified URL gets flushed                        |

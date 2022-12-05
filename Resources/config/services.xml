@@ -20,6 +20,7 @@
             <argument>%headless_shopware_varnish_cache.reverse_proxy.max_parallel_invalidations%</argument>
             <argument>%headless_shopware_varnish_cache.reverse_proxy.ban_method%</argument>
             <argument>%headless_shopware_varnish_cache.reverse_proxy.tag_flush_threshold%</argument>
+            <argument>%headless_shopware_varnish_cache.reverse_proxy.use_xkey%</argument>
         </service>
 
         <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Command\InvalidationCommand">

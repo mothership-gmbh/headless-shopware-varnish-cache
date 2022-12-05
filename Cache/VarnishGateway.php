@@ -23,14 +23,16 @@ class VarnishGateway implements GatewayInterface
     private array $invalidateRegex = [];
     private array $invalidateUrls = [];
     private int $tagFlushThreshold;
+    private bool $useXKey;
 
-    public function __construct(bool $active, array $hosts, int $concurrency, string $banMethod, int $tagFlushThreshold)
+    public function __construct(bool $active, array $hosts, int $concurrency, string $banMethod, int $tagFlushThreshold, bool $useXKey)
     {
         $this->active = $active;
         $this->hosts = array_filter($hosts);
         $this->concurrency = $concurrency;
         $this->banMethod = $banMethod;
         $this->tagFlushThreshold = $tagFlushThreshold;
+        $this->useXKey = $useXKey;
     }
 
     public function invalidate(array $tags): void
@@ -78,7 +80,7 @@ class VarnishGateway implements GatewayInterface
     {
         $requests = [];
         /**
-         * AIG-2570: Wenn Properties via API aktualisiert werden, werden alle Produkte gepurged. Um nicht mehrere
+         * Wenn Properties via API aktualisiert werden, werden alle Produkte gepurged. Um nicht mehrere
          * tausend Purge Requests zu schicken, schicken wir einen Purge-All-Tag, wenn ein Limit erreicht ist.
          *
          * @see \Shopware\Core\Framework\Adapter\Cache\CacheInvalidationSubscriber::getChangedPropertyFilterTags
@@ -91,7 +93,12 @@ class VarnishGateway implements GatewayInterface
 
         foreach ($this->hosts as $host) {
             foreach ($this->invalidateTags as $tag => $_) {
-                $requests[] = new Request($this->banMethod, $host, ['X-Cache-Tags' => $tag]);
+                if($this->useXKey){
+                    $requests[] = new Request($this->banMethod, $host, ['xkey' => $tag]);
+                }
+                else {
+                    $requests[] = new Request($this->banMethod, $host, ['X-Cache-Tags' => $tag]);
+                }
             }
             foreach ($this->invalidateRegex as $regex => $_) {
                 $requests[] = new Request($this->banMethod, $host, ['X-Url-Regex' => $regex]);
