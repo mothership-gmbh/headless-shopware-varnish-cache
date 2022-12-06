@@ -1,7 +1,6 @@
 {
     "name": "mothership/headless-shopware-varnish-cache",
     "description": "Shopware bundle that adds a cache adapter for a varnish for headless shopware",
-    "version": "1.0.0",
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
