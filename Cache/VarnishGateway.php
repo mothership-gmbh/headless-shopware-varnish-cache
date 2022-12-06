@@ -24,8 +24,9 @@ class VarnishGateway implements GatewayInterface
     private array $invalidateUrls = [];
     private int $tagFlushThreshold;
     private bool $useXKey;
+    private int $xKeyChunkSize;
 
-    public function __construct(bool $active, array $hosts, int $concurrency, string $banMethod, int $tagFlushThreshold, bool $useXKey)
+    public function __construct(bool $active, array $hosts, int $concurrency, string $banMethod, int $tagFlushThreshold, bool $useXKey, int $xKeyChunkSize)
     {
         $this->active = $active;
         $this->hosts = array_filter($hosts);
@@ -33,6 +34,7 @@ class VarnishGateway implements GatewayInterface
         $this->banMethod = $banMethod;
         $this->tagFlushThreshold = $tagFlushThreshold;
         $this->useXKey = $useXKey;
+        $this->xKeyChunkSize = $xKeyChunkSize;
     }
 
     public function invalidate(array $tags): void
@@ -92,12 +94,16 @@ class VarnishGateway implements GatewayInterface
         }
 
         foreach ($this->hosts as $host) {
-            foreach ($this->invalidateTags as $tag => $_) {
-                if($this->useXKey){
-                    $requests[] = new Request($this->banMethod, $host, ['xkey' => $tag]);
-                }
-                else {
-                    $requests[] = new Request($this->banMethod, $host, ['X-Cache-Tags' => $tag]);
+            $tags = array_keys($this->invalidateTags);
+            if(!empty($tags)){
+                if ($this->useXKey) {
+                    foreach (array_chunk($tags, $this->xKeyChunkSize) as $chunkedTags) {
+                        $requests[] = new Request($this->banMethod, $host, ['xkey' => implode(' ', $chunkedTags)]);
+                    }
+                } else {
+                    foreach ($tags as $tag) {
+                        $requests[] = new Request($this->banMethod, $host, ['X-Cache-Tags' => $tag]);
+                    }
                 }
             }
             foreach ($this->invalidateRegex as $regex => $_) {

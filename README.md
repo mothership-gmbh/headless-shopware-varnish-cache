@@ -2,7 +2,7 @@ Mothership Varnish cache adapter for headless Shopware
 ======================
 This Shopware bundle adds a cache adapter for a varnish for headless shopware.  
 If activated, it automatically invalidates a varnish cache when a cache-tag gets invalidated in Shopware. Like this,
-an external frontend application can use an effective full page cache (FPC) together with a headless Shopware backend. 
+an external frontend application can use an effective full page cache (FPC) together with a headless Shopware backend.
 
 This bundle is meant to be used together with
 the [corresponding nuxt module](https://github.com/mothership-gmbh/nuxt-shopware-caching) e.g. for Shopware-PWA.
@@ -63,6 +63,7 @@ headless_shopware_varnish_cache:
     ban_method: "BAN"
     tag_flush_threshold: 100
     use_xkey: true # requires Varnish module xkey
+    xkey_chunksize: 50 # optional, default: 50
 ```
 
 As you can see, two environment variables are used:
@@ -81,9 +82,9 @@ caching solution!
 
 Usage
 -----
-After installation and activation the module automatically invalidates the varnish cache at the configured hosts when a 
+After installation and activation the module automatically invalidates the varnish cache at the configured hosts when a
 cache-tag gets invalidated in Shopware.  
-For example if a product changes, Shopware by default invalidates a cache-tag for this product. Like this all pages 
+For example if a product changes, Shopware by default invalidates a cache-tag for this product. Like this all pages
 that contain this product get invalidated too and therefore are always up-to-date.
 
 ## CLI-Command to manually flush the cache
@@ -95,14 +96,17 @@ that contain this product get invalidated too and therefore are always up-to-dat
 - --regex : Regex to match URLs which should be flushed
 
 ## Flush manually via curl
-### Using the xkeys version
-| Usecase          | Command                                                     | Description                                                |
-|------------------|-------------------------------------------------------------|------------------------------------------------------------|
-| single URL       | `curl -X BAN https://www.domain.de/my/path`                 | Only the specified URL gets flushed                        |
-| single cache-tag | `curl -X BAN -H 'xkey: product-<ID>' https://www.domain.de` | Flush all sites with cache-tag "product-<ID>" on this host |
 
+### Using the xkeys version
+
+| Usecase          | Command                                                     | Description                                                  |
+|------------------|-------------------------------------------------------------|--------------------------------------------------------------|
+| single URL       | `curl -X BAN https://www.domain.de/my/path`                 | Only the specified URL gets flushed                          |
+| whole domain     | `curl -X BAN -H 'xkey: all' https://www.domain.de`          | Flush all URLs on the specified host                         |
+| single cache-tag | `curl -X BAN -H 'xkey: product-<ID>' https://www.domain.de` | Flush all sites (on all hosts) with cache-tag "product-<ID>" |
 
 ### Using the custom-header version
+
 | Usecase          | Command                                                             | Description                                                |
 |------------------|---------------------------------------------------------------------|------------------------------------------------------------|
 | single URL       | `curl -X BAN https://www.domain.de/my/path`                         | Only the specified URL gets flushed                        |

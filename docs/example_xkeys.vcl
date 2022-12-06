@@ -1,4 +1,4 @@
-vcl 4.0;
+vcl 7.0;
 
 # Varnish VMODs, siehe https://varnish-cache.org/vmods/
 import std;
@@ -33,7 +33,12 @@ sub vcl_recv {
             return (purge);
         }
         if (req.http.xkey) {
-            set req.http.n-gone = xkey.purge(req.http.xkey);
+            if(req.http.xkey == "all"){
+                set req.http.n-gone = xkey.purge(req.http.host + "all");
+            } else {
+                set req.http.n-gone = xkey.purge(req.http.xkey);
+            }
+
             return (synth(200, "Invalidated "+req.http.n-gone+" objects"));
         }
          # Ban via Regex
@@ -103,6 +108,11 @@ sub vcl_backend_response {
     # Save the bereq.url so bans work efficiently
     set beresp.http.x-url = bereq.url;
     set beresp.http.X-Cacheable = "YES";
+
+    # Add the "all" tag to every response, so that a full flush can be done using this tag.
+    set beresp.http.xkey = beresp.http.xkey + " " + beresp.http.host+ "all";
+    # Also add a domain-specific all-tag to be able to flush only one domain
+    set beresp.http.xkey = beresp.http.xkey + " all";
 
     return (deliver);
 }

@@ -2,7 +2,6 @@ vcl 4.0;
 
 # Varnish VMODs, siehe https://varnish-cache.org/vmods/
 import std;
-import xkey;
 
 # You should specify here all your app nodes and use round robin to select a backend
 #include "vcl/config/backends.vcl";
@@ -28,7 +27,7 @@ sub vcl_recv {
             return (synth(405, "Method not allowed"));
         }
 
-        if (!req.http.X-Url-Regex && !req.http.X-Cache-Tags && !req.http.xkey) {
+        if (!req.http.X-Url-Regex && !req.http.X-Cache-Tags) {
             # Purge direct url
             return (purge);
         }
@@ -41,11 +40,6 @@ sub vcl_recv {
             # Logic for the ban, using the X-Cache-Tags header.
             ban("obj.http.X-Cache-Tags ~ " + req.http.X-Cache-Tags + " && req.http.host == " + req.http.host);
             return (synth(200, "BAN URLs containing cache tags (" + req.http.X-Cache-Tags + ") done."));
-        }
-        # For backwards-compatibility, the old version with a custom X-Cache-Tags header is left working.
-        if (req.http.xkey) {
-            set req.http.n-gone = xkey.purge(req.http.xkey);
-            return (synth(200, "Invalidated "+req.http.n-gone+" objects"));
         }
         # Ban via Regex
         ban("req.url ~ " + req.http.X-Url-Regex + " && req.http.host == " + req.http.host);
@@ -115,9 +109,6 @@ sub vcl_backend_response {
     set beresp.http.x-url = bereq.url;
     set beresp.http.X-Cacheable = "YES";
 
-    # For backwards-compatibility use the header of the old version with a custom header.
-    set beresp.http.xkey = beresp.http.X-Cache-Tags;
-
     return (deliver);
 }
 
@@ -136,7 +127,6 @@ sub vcl_deliver {
     # Cache Tags header should not be delivered as it is unneccessary for the client
     unset resp.http.X-Cache-Tags;
     unset resp.http.X-Cache-Tags-Number;
-    unset resp.http.xkey;
 
     set resp.http.X-Cache-Hits = obj.hits;
 }
