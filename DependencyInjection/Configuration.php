@@ -16,13 +16,15 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('headless_shopware_varnish_cache');
         $treeBuilder->getRootNode()
             ->children()
-                ->booleanNode("enabled")->defaultFalse()->end()
-                ->arrayNode("reverse_proxy")
+                ->booleanNode('enabled')->defaultFalse()->end()
+                ->arrayNode('reverse_proxy')
                     ->children()
                         ->variableNode('hosts')->defaultNull()->end()
-                        ->scalarNode("max_parallel_invalidations")->end()
-                        ->scalarNode("ban_method")->end()
-                        ->scalarNode("tag_flush_threshold")->end();
+                        ->scalarNode('max_parallel_invalidations')->end()
+                        ->scalarNode('ban_method')->end()
+                        ->scalarNode('tag_flush_threshold')->end()
+                        ->booleanNode('use_xkey')->defaultFalse()->end()
+                        ->scalarNode('xkey_chunksize')->defaultValue(50)->end();
         return $treeBuilder;
     }
 }
