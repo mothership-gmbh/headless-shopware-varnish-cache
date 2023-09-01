@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\CacheClearer\CacheClearerInterface;
 
 class VarnishCacheClearer implements CacheClearerInterface
 {
-    public function __construct(protected GatewayInterface $gateway)
+    public function __construct(protected readonly GatewayInterface $gateway)
     {
     }
 
