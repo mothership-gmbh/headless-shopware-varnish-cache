@@ -27,9 +27,10 @@ class ReverseProxyCache implements StoreInterface
     }
 
     /**
+     * @param Request $request
      * @return Response|null
      */
-    public function lookup(Request $request)
+    public function lookup(Request $request): ?Response
     {
         return null;
     }
