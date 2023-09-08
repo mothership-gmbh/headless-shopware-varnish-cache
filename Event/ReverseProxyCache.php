@@ -87,7 +87,7 @@ class ReverseProxyCache implements StoreInterface
     }
 
     /**
-     * We don't need an cleanup
+     * We don't need cleanup
      */
     public function cleanup(): void
     {

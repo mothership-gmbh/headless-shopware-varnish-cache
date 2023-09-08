@@ -12,6 +12,6 @@ class VarnishCacheClearer implements CacheClearerInterface
 
     public function clear(string $cacheDir): void
     {
-        $this->gateway->invalidate(["all"]);
+        $this->gateway->invalidate(['all']);
     }
 }
