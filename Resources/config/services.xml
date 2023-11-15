@@ -34,21 +34,9 @@
             <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway"/>
         </service>
 
-        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Adapter\Cache\CacheItemPool">
+        <service id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishCacheClearer">
             <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Cache\VarnishGateway" />
-        </service>
-
-        <service id="Shopware\Core\Framework\Adapter\Cache\CacheClearer">
-            <argument type="collection">
-                <argument type="service" id="cache.object"/>
-                <argument type="service" id="cache.http"/>
-                <argument type="service" id="Mothership\HeadlessShopwareVarnishCacheBundle\Adapter\Cache\CacheItemPool"/>
-            </argument>
-            <argument type="service" id="cache_clearer"/>
-            <argument type="service" id="filesystem"/>
-            <argument>%kernel.cache_dir%</argument>
-            <argument>%kernel.environment%</argument>
-            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="kernel.cache_clearer"/>
         </service>
     </services>
 </container>

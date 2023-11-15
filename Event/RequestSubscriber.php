@@ -33,7 +33,8 @@ class RequestSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Der Worker beendet sich nach 60 sekunden. Siehe supervisor configuration.
+     * Worker stops after 60s. See worker/supervisor configuration
+     * Flush all collected tags in this case.
      *
      * @return void
      */
@@ -42,11 +43,19 @@ class RequestSubscriber implements EventSubscriberInterface
         $this->varnishGateway->flushCollected();
     }
 
+    /**
+     * When a request is finished, flush all collected invalidation tags, instead of flushing every tag on its own
+     * @return void
+     */
     public function onKernelFinish(): void
     {
         $this->varnishGateway->flushCollected();
     }
 
+    /**
+     * Same as for request finish, just for CLI commands.
+     * @return void
+     */
     public function onConsoleTerminate(): void
     {
         $this->varnishGateway->flushCollected();

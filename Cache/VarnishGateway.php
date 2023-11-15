@@ -82,9 +82,8 @@ class VarnishGateway implements GatewayInterface
     {
         $requests = [];
         /**
-         * Wenn Properties via API aktualisiert werden, werden alle Produkte gepurged. Um nicht mehrere
-         * tausend Purge Requests zu schicken, schicken wir einen Purge-All-Tag, wenn ein Limit erreicht ist.
-         *
+         * When properties are updated via API, all products are purged. To avoid sending several thousand purge
+         * requests, we send a purge all tag when a limit is reached.
          * @see \Shopware\Core\Framework\Adapter\Cache\CacheInvalidationSubscriber::getChangedPropertyFilterTags
          */
         if (count($this->invalidateTags) > $this->tagFlushThreshold) {

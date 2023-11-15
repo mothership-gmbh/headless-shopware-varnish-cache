@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mothership\HeadlessShopwareVarnishCacheBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use function is_array;
 
 class HeadlessShopwareVarnishCacheExtension extends Extension
 {
@@ -12,11 +14,11 @@ class HeadlessShopwareVarnishCacheExtension extends Extension
     /**
      * @inheritDoc
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $this->addConfig($container, "headless_shopware_varnish_cache", $config);
+        $this->addConfig($container, 'headless_shopware_varnish_cache', $config);
     }
 
     /**
@@ -30,7 +32,7 @@ class HeadlessShopwareVarnishCacheExtension extends Extension
         foreach ($options as $key => $option) {
             $container->setParameter($alias . '.' . $key, $option);
 
-            if (\is_array($option)) {
+            if (is_array($option)) {
                 $this->addConfig($container, $alias . '.' . $key, $option);
             }
         }

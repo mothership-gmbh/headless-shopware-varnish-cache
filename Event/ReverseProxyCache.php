@@ -27,9 +27,10 @@ class ReverseProxyCache implements StoreInterface
     }
 
     /**
+     * @param Request $request
      * @return Response|null
      */
-    public function lookup(Request $request)
+    public function lookup(Request $request): ?Response
     {
         return null;
     }
@@ -86,7 +87,7 @@ class ReverseProxyCache implements StoreInterface
     }
 
     /**
-     * We don't need an cleanup
+     * We don't need cleanup
      */
     public function cleanup(): void
     {
