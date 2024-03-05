@@ -87,7 +87,7 @@ class VarnishGateway implements GatewayInterface
          * @see \Shopware\Core\Framework\Adapter\Cache\CacheInvalidationSubscriber::getChangedPropertyFilterTags
          */
         if (count($this->invalidateTags) > $this->tagFlushThreshold) {
-            $this->invalidateTags = ['all'];
+            $this->invalidateTags = ['all' => true];
             $this->invalidateRegex = [];
             $this->invalidateUrls = [];
         }
