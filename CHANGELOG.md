@@ -1,3 +1,7 @@
+# 3.0.0
+- Shopware 6.6 compatibility
+- Added a docker-compose setup
+
 # 2.0.1
 - Fixes #6: The "all" tag invalidation when internal threshold is exceeded
 

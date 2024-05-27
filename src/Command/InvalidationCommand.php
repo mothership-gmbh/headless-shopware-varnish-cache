@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Mothership\HeadlessShopwareVarnishCacheBundle\Command;
 
 use Mothership\HeadlessShopwareVarnishCacheBundle\Cache\GatewayInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function explode;
 
+#[AsCommand(name: 'varnish:invalidate', description: 'Invalidates the Varnish cache based on tag or regex')]
 class InvalidationCommand extends Command
 {
-    protected static $defaultName = 'varnish:invalidate';
     private GatewayInterface $gateway;
 
     public function __construct(GatewayInterface $gateway)
@@ -25,10 +25,8 @@ class InvalidationCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Invalidates the Varnish cache based on tag or regex');
         $this->addOption('tags', 't', InputOption::VALUE_REQUIRED, 'Comma separated tags to clear');
         $this->addOption('regex', 'r', InputOption::VALUE_REQUIRED, 'Regex to match URLs which should be flushed');
-
     }
 
     /**
