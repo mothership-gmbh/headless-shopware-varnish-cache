@@ -1,0 +1,35 @@
+services:
+  shop:
+    image: dockware/dev:6.6.2.0
+    ports:
+      - "81:80"
+      - "3306:3306"
+      - "22:22"
+      - "8888:8888"
+      - "9999:9999"
+      - "9998:9998"
+    volumes:
+      - ".:/var/www/html/src/HeadlessShopwareVarnishCacheBundle"
+      - ./docker/dockware/config/packages/cache.yml:/var/www/html/config/packages/cache.yml
+      - ./docker/dockware/boot_start.sh:/var/www/boot_start.sh
+    environment:
+      - XDEBUG_ENABLED=1
+      - XDEBUG_MODE=debug,coverage
+    networks:
+      headless-shopware-varnish-cache: { aliases: [ "shop" ] }
+
+  varnish:
+    image: varnish:7.0
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
+    environment:
+      - XDEBUG_ENABLED=1
+      - XDEBUG_MODE=debug,coverage
+    networks:
+      headless-shopware-varnish-cache: { aliases: [ "varnish" ] }
+
+networks:
+  headless-shopware-varnish-cache:
+    driver: bridge

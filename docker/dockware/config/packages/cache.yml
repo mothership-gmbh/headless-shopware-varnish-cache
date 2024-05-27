@@ -1,0 +1,8 @@
+headless_shopware_varnish_cache:
+  enabled: true
+  reverse_proxy:
+    hosts: ["http://varnish"]
+    max_parallel_invalidations: 3
+    ban_method: "BAN"
+    tag_flush_threshold: 100
+    use_xkey: false
